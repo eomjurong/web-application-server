@@ -34,51 +34,51 @@ public class RequestHandler extends Thread {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             // request 정보 리딩
-        	BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-        	String line = reader.readLine();
-        	if (line == null) {
-        		return;
-        	}
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String line = reader.readLine();
+            if (line == null) {
+                return;
+            }
 
-        	// request 정보 파싱
-        	String url = HttpRequestUtils.parseRequestInfo(line).get("url");
-        	Map<String, String> params = null;
+            // request 정보 파싱
+            String url = HttpRequestUtils.parseRequestInfo(line).get("url");
+            Map<String, String> params = null;
 
-        	int contentLength = 0;
-        	while (!"".equals(line)) {
-        		log.info(line);
-        		line = reader.readLine();
-        		if (line.contains("Content-Length")) {
-        			contentLength = Integer.parseInt(line.split(":")[1].trim());
-        		}
-        	}
-        	
-        	DataOutputStream dos = new DataOutputStream(out);
-        	byte[] body = null;
+            int contentLength = 0;
+            while (!"".equals(line)) {
+                log.info(line);
+                line = reader.readLine();
+                if (line.contains("Content-Length")) {
+                    contentLength = Integer.parseInt(line.split(":")[1].trim());
+                }
+            }
 
-        	if ("/user/create".equals(url)) {
-        		params = HttpRequestUtils.parseQueryString(IOUtils.readData(reader, contentLength));
-        		url = "/index.html";
+            DataOutputStream dos = new DataOutputStream(out);
+            byte[] body = null;
 
-        		User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
-        		DataBase.addUser(user);
-        		log.info(user.toString());
-        		response302Header(dos, url);
-        	} else if ("/user/login".equals(url)) {
-        		params = HttpRequestUtils.parseQueryString(IOUtils.readData(reader, contentLength));
-        		User user = DataBase.findUserById(params.get("userId"));
+            if ("/user/create".equals(url)) {
+                params = HttpRequestUtils.parseQueryString(IOUtils.readData(reader, contentLength));
+                url = "/index.html";
 
-        		boolean logined = false;
-        		if (user != null) {
-        			logined = user.getPassword().equals(params.get("password"));
-        			url = logined ? "/index.html" : "/user/login_failed.html";
-        			response302HeaderForLogin(dos, url, logined);
-        		}
-        	} else {
-        		body = Files.readAllBytes(new File("./webapp" + url).toPath());
-        		response200Header(dos, body.length);
-        		responseBody(dos, body);
-        	}
+                User user = new User(params.get("userId"), params.get("password"), params.get("name"), params.get("email"));
+                DataBase.addUser(user);
+                log.info(user.toString());
+                response302Header(dos, url);
+            } else if ("/user/login".equals(url)) {
+                params = HttpRequestUtils.parseQueryString(IOUtils.readData(reader, contentLength));
+                User user = DataBase.findUserById(params.get("userId"));
+
+                boolean logined = false;
+                if (user != null) {
+                    logined = user.getPassword().equals(params.get("password"));
+                    url = logined ? "/index.html" : "/user/login_failed.html";
+                    response302HeaderForLogin(dos, url, logined);
+                }
+            } else {
+                body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                response200Header(dos, body.length);
+                responseBody(dos, body);
+            }
 
         } catch (IOException e) {
             log.error(e.getMessage());

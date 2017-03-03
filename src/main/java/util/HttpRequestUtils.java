@@ -9,30 +9,30 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 public class HttpRequestUtils {
-	
-	/**
-	 * Request 요청의 헤더 정보를 파싱한다.
-	 * @param requestInfo
-	 * @return
-	 */
-	public static Map<String, String> parseRequestInfo(String requestInfo) {
-		if (Strings.isNullOrEmpty(requestInfo)) {
-			return null;
-		}
 
-		String [] tokens = requestInfo.split(" ");
-		if (tokens.length != 3) {
-			return null;
-		}
+    /**
+     * Request 요청의 헤더 정보를 파싱한다.
+     * @param requestInfo
+     * @return
+     */
+    public static Map<String, String> parseRequestInfo(String requestInfo) {
+        if (Strings.isNullOrEmpty(requestInfo)) {
+            return null;
+        }
 
-		Map<String, String> result = new HashMap<String, String>();
-		result.put("method", tokens[0]);
-		result.put("url", tokens[1]);
-		result.put("version", tokens[2]);
-		
-		return result;
-	}
-	
+        String [] tokens = requestInfo.split(" ");
+        if (tokens.length != 3) {
+            return null;
+}
+
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("method", tokens[0]);
+        result.put("url", tokens[1]);
+        result.put("version", tokens[2]);
+
+        return result;
+    }
+
     /**
      * @param queryString은
      *            URL에서 ? 이후에 전달되는 field1=value1&field2=value2 형식임
