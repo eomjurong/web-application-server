@@ -15,7 +15,7 @@ import util.HttpRequestUtils.Pair;
 
 public class HttpRequest {
 
-    private String method;
+    private HttpMethod method;
     private String path;
     private Map<String, String> params;
     private String version;
@@ -46,11 +46,11 @@ public class HttpRequest {
         }
     }
 
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
-    public void setMethod(String method) {
+    public void setMethod(HttpMethod method) {
         this.method = method;
     }
 
@@ -109,7 +109,7 @@ public class HttpRequest {
             return;
         }
 
-        this.setMethod(tokens[0]);
+        this.setMethod(HttpMethod.valueOf(tokens[0]));
         if (tokens[1].contains("?")) {
             int index = tokens[1].indexOf("?");
             this.setPath(tokens[1].substring(0, index));
