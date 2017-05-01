@@ -10,7 +10,7 @@ public class UserListController extends AbstractController {
 
     @Override
     protected void doGet(HttpRequest request, HttpResponse response) throws IOException {
-        if (!isLogined(request)) {
+        if (!isLogined(request.getSession())) {
             response.sendRedirect("/user/login.html");
             return;
         }
@@ -31,11 +31,11 @@ public class UserListController extends AbstractController {
         response.forwardBody(builder.toString());
     }
 
-    private boolean isLogined(HttpRequest request) {
-        String value = request.getCookie("logined");
-        if (value == null) {
+    private boolean isLogined(HttpSession session) {
+        Object user = session.getAttribute("user");
+        if (user == null) {
             return false;
         }
-        return Boolean.parseBoolean(value);
+        return true;
     }
 }
